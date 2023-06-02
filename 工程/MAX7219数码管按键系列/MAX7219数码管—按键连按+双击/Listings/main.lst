@@ -1,0 +1,140 @@
+C51 COMPILER V9.54   MAIN                                                                  05/17/2023 16:26:15 PAGE 1   
+
+
+C51 COMPILER V9.54, COMPILATION OF MODULE MAIN
+OBJECT MODULE PLACED IN .\Objects\main.obj
+COMPILER INVOKED BY: D:\Keil5 C51\C51\BIN\C51.EXE main.c OPTIMIZE(8,SPEED) BROWSE DEBUG OBJECTEXTEND PRINT(.\Listings\ma
+                    -in.lst) TABS(2) OBJECT(.\Objects\main.obj)
+
+line level    source
+
+   1          #include <reg52.h>
+   2          #include <seg.h>
+   3          #include <delay.h>
+   4          
+   5          #define KEY_DELAY_TIME 100
+   6          #define KEY_LONG_TIME 1000
+   7          #define KEY_KEEP_TIME 250
+   8          #define KEY_DOUBLE_TIME 250
+   9          
+  10          sbit S1 = P1^0;
+  11          
+  12          unsigned int key_val = 0;
+  13          
+  14          
+  15          unsigned char Date_buff[3] = {0, 0,0};//数码管显示缓冲区，初值0xFF确保启动时都不亮
+  16          //显示的数字，数值为10的时候，显示“-”
+  17          
+  18          
+  19          char Flag = 1; 
+  20          //char short_flag = 0;
+  21          int key_cnt1 = 0;
+  22          int key_cnt2 = 0;
+  23          int key_cnt3 = 0;
+  24          unsigned char key_times;
+  25          void Key_scan()
+  26          {
+  27   1      
+  28   1        if(S1)//按键没按下
+  29   1        {
+  30   2          Flag = 0;
+  31   2          key_cnt1 = 0;
+  32   2          if(key_times > 0)
+  33   2          {
+  34   3            key_cnt3++;
+  35   3            if(key_cnt3 > KEY_DOUBLE_TIME)
+  36   3            {
+  37   4              key_cnt3 = 0;
+  38   4              key_times = 0;
+  39   4            }
+  40   3          }
+  41   2        }
+  42   1        else if(!Flag)//按下检测
+  43   1        {
+  44   2          key_cnt1++;
+  45   2          if(key_cnt1 > KEY_DELAY_TIME)
+  46   2          {
+  47   3            key_cnt1 = 0;
+  48   3            key_cnt3 = 0;
+  49   3            Flag = 1;
+  50   3            key_times++;
+  51   3            if(key_times == 1)
+  52   3            {
+  53   4              key_val+=1;
+  54   4            }
+C51 COMPILER V9.54   MAIN                                                                  05/17/2023 16:26:15 PAGE 2   
+
+  55   3            else if(key_times == 2)
+  56   3            {
+  57   4              key_val = 0;
+  58   4            }
+  59   3          }
+  60   2        }
+  61   1        else if(key_cnt1 < KEY_LONG_TIME)
+  62   1        {
+  63   2          key_cnt1++;
+  64   2        }
+  65   1        else
+  66   1        {
+  67   2          key_cnt2++;
+  68   2          if(key_cnt2 > KEY_KEEP_TIME)
+  69   2          {
+  70   3            key_cnt2 = 0;
+  71   3            key_val+=1;
+  72   3          }
+  73   2        }
+  74   1      }
+  75          //数码管“以左为尊”————最左边是最高位
+  76          void  Display_smg(unsigned char i) 
+  77          {
+  78   1        write_data(1,i%10);   // 显示时最高位 
+  79   1        write_data(2,i/10%10);
+  80   1      
+  81   1      }
+  82          
+  83          void main(void)
+  84          {
+  85   1        
+  86   1        
+  87   1        unsigned char i;
+  88   1        init_max7221();    // 初始化
+  89   1        delayms(2);
+  90   1        for(i = 0; i < 8; i++)
+  91   1        {
+  92   2          write_data(i+1,10);   // 显示-位
+  93   2        }
+  94   1        delayms(1000);
+  95   1        while(1) 
+  96   1        {
+  97   2      //    if(S1 == 1)
+  98   2      //    {
+  99   2      //      flag_key = 1;
+ 100   2      //    }
+ 101   2      //    if(flag_key == 1&& S1==0)
+ 102   2      //    {
+ 103   2      //      n+=1;
+ 104   2      //      flag_key = 0;
+ 105   2      //    }
+ 106   2          key_scan(); 
+*** WARNING C206 IN LINE 106 OF main.c: 'key_scan': missing function-prototype
+ 107   2          Display_smg(key_val);
+ 108   2        }
+ 109   1      }
+ 110          
+ 111          
+
+
+MODULE INFORMATION:   STATIC OVERLAYABLE
+   CODE SIZE        =    244    ----
+C51 COMPILER V9.54   MAIN                                                                  05/17/2023 16:26:15 PAGE 3   
+
+   CONSTANT SIZE    =   ----    ----
+   XDATA SIZE       =   ----    ----
+   PDATA SIZE       =   ----    ----
+   DATA SIZE        =     13       2
+   IDATA SIZE       =   ----    ----
+   BIT SIZE         =   ----    ----
+END OF MODULE INFORMATION.
+
+
+C51 COMPILATION COMPLETE.  1 WARNING(S),  0 ERROR(S)

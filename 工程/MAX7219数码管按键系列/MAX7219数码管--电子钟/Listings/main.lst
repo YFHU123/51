@@ -1,0 +1,141 @@
+C51 COMPILER V9.54   MAIN                                                                  05/21/2023 10:35:14 PAGE 1   
+
+
+C51 COMPILER V9.54, COMPILATION OF MODULE MAIN
+OBJECT MODULE PLACED IN .\Objects\main.obj
+COMPILER INVOKED BY: D:\Keil5 C51\C51\BIN\C51.EXE main.c OPTIMIZE(8,SPEED) BROWSE DEBUG OBJECTEXTEND PRINT(.\Listings\ma
+                    -in.lst) TABS(2) OBJECT(.\Objects\main.obj)
+
+line level    source
+
+   1          #include <reg52.h>
+   2          #include <seg.h>
+   3          #include <delay.h>
+   4          
+   5          #define KEY_DELAY_TIME 100
+   6          
+   7          sbit S1 = P1^0;
+   8          
+   9          char n = 0;
+  10          
+  11          
+  12          unsigned char Date_buff[3] = {0, 0,0};//数码管显示缓冲区，初值0xFF确保启动时都不亮
+  13          //显示的数字，数值为10的时候，显示“-”
+  14          
+  15          
+  16          char flag_key;
+  17          char cnt_key;
+  18          void key_scan()
+  19          {
+  20   1        if(S1 == 1)
+  21   1          {
+  22   2            flag_key = 1;
+  23   2            cnt_key = 0;
+  24   2          }
+  25   1          if(flag_key == 1&& S1==0)
+  26   1          {
+  27   2            cnt_key++;
+  28   2            if(cnt_key > KEY_DELAY_TIME)
+  29   2            {
+  30   3              cnt_key = 0;
+  31   3              n+=1;
+  32   3              flag_key = 0;
+  33   3              if(n == 10)
+  34   3                n = 0;
+  35   3            }
+  36   2            
+  37   2          }
+  38   1      }
+  39          
+  40          
+  41          void InitTimer0()
+  42          {
+  43   1        TMOD = 0x01;
+  44   1        TH0 = (65535 - 50000) / 256; // 50ms
+  45   1        TL0 = (65535 - 50000) % 256;
+  46   1        
+  47   1        ET0 = 1;
+  48   1        EA = 1;
+  49   1        TR0 = 1;
+  50   1      }
+  51          
+  52          unsigned char count = 0;
+  53          unsigned char sec = 0;
+  54          unsigned char min = 0;
+C51 COMPILER V9.54   MAIN                                                                  05/21/2023 10:35:14 PAGE 2   
+
+  55          unsigned char hour = 0;
+  56          void ServiceTimer0() interrupt 1
+  57          {
+  58   1        TH0 = (65535 - 50000) / 256;
+  59   1        TL0 = (65535 - 50000) % 256;
+  60   1        
+  61   1        count++;
+  62   1        if(count == 20)//1s
+  63   1        {
+  64   2          count = 0;
+  65   2          sec++;
+  66   2          if(sec == 60)
+  67   2          {
+  68   3            sec = 0;
+  69   3            min++;
+  70   3            if(min == 60)
+  71   3            {
+  72   4              min = 0;
+  73   4              hour ++;
+  74   4              if(hour == 24)
+  75   4              {
+  76   5                hour = 0;
+  77   5              }
+  78   4            }
+  79   3          }
+  80   2        }
+  81   1      }
+  82          
+  83          
+  84          //数码管“以左为尊”————最左边是最高位
+  85          void  Display_smg() 
+  86          {
+  87   1        write_data(1,sec%10);   
+  88   1        write_data(2,sec/10);
+  89   1        write_data(4,min%10);
+  90   1        write_data(5,min/10);
+  91   1        write_data(7,hour%10);
+  92   1        write_data(8,hour/10);
+  93   1      }
+  94          
+  95          void main(void)
+  96          {
+  97   1        unsigned char i;
+  98   1        init_max7221();    // 初始化
+  99   1        InitTimer0();
+ 100   1        delayms(2);
+ 101   1        for(i = 0; i < 8; i++)
+ 102   1        {
+ 103   2          write_data(i+1,10);   // 显示-位
+ 104   2        }
+ 105   1        delayms(1000);
+ 106   1        while(1) 
+ 107   1        {
+ 108   2          //key_scan(); 
+ 109   2          Display_smg();
+ 110   2        }
+ 111   1      }
+ 112          
+ 113          
+
+
+MODULE INFORMATION:   STATIC OVERLAYABLE
+C51 COMPILER V9.54   MAIN                                                                  05/21/2023 10:35:14 PAGE 3   
+
+   CODE SIZE        =    236    ----
+   CONSTANT SIZE    =   ----    ----
+   XDATA SIZE       =   ----    ----
+   PDATA SIZE       =   ----    ----
+   DATA SIZE        =     10       1
+   IDATA SIZE       =   ----    ----
+   BIT SIZE         =   ----    ----
+END OF MODULE INFORMATION.
+
+
+C51 COMPILATION COMPLETE.  0 WARNING(S),  0 ERROR(S)

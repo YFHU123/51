@@ -1,0 +1,194 @@
+C51 COMPILER V9.53.0.0   MAIN                                                              05/05/2023 08:13:32 PAGE 1   
+
+
+C51 COMPILER V9.53.0.0, COMPILATION OF MODULE MAIN
+OBJECT MODULE PLACED IN .\Objects\main.obj
+COMPILER INVOKED BY: C:\Keil_v5\C51\BIN\C51.EXE main.c OPTIMIZE(8,SPEED) BROWSE DEBUG OBJECTEXTEND PRINT(.\Listings\main
+                    -.lst) TABS(2) OBJECT(.\Objects\main.obj)
+
+line level    source
+
+   1          #include "reg51.h"
+   2          
+   3          sbit P2_0 = P2^0;
+   4          sbit P2_1 = P2^1;
+   5          sbit P2_2 = P2^2;
+   6          sbit P2_3 = P2^3;
+   7          
+   8          sbit P2_4 = P2^4;
+   9          sbit P2_5 = P2^5;
+  10          sbit P2_6 = P2^6;
+  11          sbit P2_7 = P2^7;
+  12          
+  13          sbit LED_A = P2^0;
+  14          sbit LED_B = P2^0;
+  15          
+  16          sbit P1_0 = P1 ^ 0;
+  17          
+  18          sbit S1 = P3^0;
+  19          sbit S2 = P3^1;
+  20          
+  21          char bu1Flag = 0;
+  22          
+  23          int numA = 0;
+  24          int numB = 0;
+  25          
+  26          int status = 0;
+  27          
+  28          
+  29          
+  30          char SMG_duanma[16] = {0xc0,0xf9,0xa4,0xb0,0x99,0x92,0x82,0xf8,0x80,0x90,0x88,0x83,0xc6,0xa1,0x86,0x8e};
+  31          
+  32          void delay_ms(int ms)
+  33          {
+  34   1          int i = 0;
+  35   1          int j = 0;
+  36   1          for(i=0;i<ms;i++)
+  37   1          {
+  38   2              for(j=0;j<100;j++){}
+  39   2          }
+  40   1      }
+  41          
+  42          //跑马灯  2023年4月18日 11点39分
+  43          void fun_pmd()
+  44          {
+  45   1          //步骤1: 只亮0号灯       
+  46   1          P2 = 0xFE; //1111,1110   
+  47   1          delay_ms(200);      
+  48   1          
+  49   1          //步骤2 只亮1号灯 
+  50   1          P2 = 0xFD;   //1111,1101        
+  51   1          delay_ms(200);
+  52   1      
+  53   1          //步骤3 只亮2号灯
+  54   1          P2 = 0xFB;   //1111,1011    
+C51 COMPILER V9.53.0.0   MAIN                                                              05/05/2023 08:13:32 PAGE 2   
+
+  55   1          delay_ms(200);
+  56   1      
+  57   1          //步骤4 只亮3号灯
+  58   1          P2 = 0xF7;   //1111,0111      
+  59   1          delay_ms(200);
+  60   1      }
+  61          
+  62          char led[4]={0xFE,0xFD,0xFB,0xF7};
+  63          //跑马灯  2023年4月18日 11点39分
+  64          void fun_pmd2()
+  65          {
+  66   1          int i = 0;
+  67   1          for(i=0;i<4;i++)
+  68   1          {   
+  69   2              P2 = led[i];   //1111,0111      
+  70   2              delay_ms(200);
+  71   2          }
+  72   1      }
+  73          
+  74          void fun_lsd()
+  75          {
+  76   1          
+  77   1      }
+  78          
+  79          
+  80          
+  81          //void SMG()
+  82          //{
+  83          //  int i ;
+  84          //  for (i = 0;i<10;i++)
+  85          //  {
+  86          //    P1 = SMG_duanma[i];
+  87          //    delay_ms(500);
+  88          //  }
+  89          
+  90          //}
+  91          
+  92          
+  93          //unsigned char i = 0;
+  94          //  
+  95          //unsigned flag1 = 0;
+  96          //unsigned flag2 = 0;
+  97          //void KEY()
+  98          //{
+  99          //  if(S1 == 0)
+ 100          //  {
+ 101          //    flag1 = 1;
+ 102          //  }
+ 103          //  if(flag1 == 1 && S1 == 1)
+ 104          //  {
+ 105          //    flag1 = 0;
+ 106          //    i+=2;
+ 107          //  }
+ 108          //  
+ 109          //  
+ 110          //  if(S2 == 0)
+ 111          //  {
+ 112          //    flag2 = 1;
+ 113          //  }
+ 114          //  if(flag2 == 1 && S2 == 1)
+ 115          //  {
+ 116          //    flag2 = 0;
+C51 COMPILER V9.53.0.0   MAIN                                                              05/05/2023 08:13:32 PAGE 3   
+
+ 117          //    i+=1;
+ 118          //  }
+ 119          
+ 120          //  if(i > 9)
+ 121          //  {
+ 122          //    i = 0;
+ 123          //  }
+ 124          //  
+ 125          //}
+ 126          
+ 127          
+ 128          
+ 129          
+ 130          
+ 131          
+ 132          main()
+ 133          {
+ 134   1          while(1)
+ 135   1          { 
+ 136   2            
+ 137   2            P2_4 = 1;
+ 138   2            P2_5 = 0;
+ 139   2            P2_6 = 0;
+ 140   2            P2_7 = 0;
+ 141   2            P1 = 0x80;
+ 142   2            delay_ms(500);
+ 143   2            
+ 144   2            P2_4 = 0;
+ 145   2            P2_5 = 1;
+ 146   2            P2_6 = 0;
+ 147   2            P2_7 = 0;
+ 148   2            P1 = 0x80;
+ 149   2            delay_ms(500);
+ 150   2            
+ 151   2            P2_4 = 0;
+ 152   2            P2_5 = 0;
+ 153   2            P2_6 = 1;
+ 154   2            P2_7 = 0;
+ 155   2            P1 = 0x80;
+ 156   2            delay_ms(500);      
+ 157   2            
+ 158   2            P2_4 = 0;
+ 159   2            P2_5 = 0;
+ 160   2            P2_6 = 0;
+ 161   2            P2_7 = 1;
+ 162   2            P1 = 0x80;
+ 163   2            delay_ms(500);
+ 164   2            
+ 165   2          }   
+ 166   1      }
+
+
+MODULE INFORMATION:   STATIC OVERLAYABLE
+   CODE SIZE        =    155    ----
+   CONSTANT SIZE    =   ----    ----
+   XDATA SIZE       =   ----    ----
+   PDATA SIZE       =   ----    ----
+   DATA SIZE        =     27    ----
+   IDATA SIZE       =   ----    ----
+   BIT SIZE         =   ----    ----
+END OF MODULE INFORMATION.
+
+
+C51 COMPILATION COMPLETE.  0 WARNING(S),  0 ERROR(S)

@@ -1,0 +1,141 @@
+C51 COMPILER V9.54   MAIN                                                                  05/24/2023 18:52:30 PAGE 1   
+
+
+C51 COMPILER V9.54, COMPILATION OF MODULE MAIN
+OBJECT MODULE PLACED IN MAIN.OBJ
+COMPILER INVOKED BY: D:\Keil5 C51\C51\BIN\C51.EXE MAIN.C OPTIMIZE(8,SPEED) BROWSE DEBUG OBJECTEXTEND
+
+line level    source
+
+   1          #include<reg52.h>
+   2          #include<intrins.h>
+   3          #define uint  unsigned int
+   4          #define uchar unsigned char
+   5          #define NOP() {_nop_();_nop_();_nop_();_nop_();}
+   6          //------LCD“˝Ω≈-----
+   7          sbit LCD_RS=P2^0;
+   8          sbit LCD_RW=P2^1;
+   9          sbit LCD_EN=P2^2;
+  10          //------≥¨…˘≤®“˝Ω≈-------
+  11          sbit Tx=P3^3;           //¥•∑¢øÿ÷∆–≈∫≈ ‰»Î
+  12          sbit Rx=P3^2;           //ªÿœÏ–≈∫≈ ‰≥ˆ
+  13          uchar code table[]={"Hallo World"};             //LCDµ⁄“ª––œ‘ æ
+  14          long int t;
+  15          //--------—” ±-------
+  16          void delay(uint ms)
+  17          {
+  18   1              uint t;
+  19   1              while(ms--)
+  20   1                      for(t=0;t<120;t++);
+  21   1      }
+  22          //-------∂¡LCD◊¥Ã¨-------
+  23          uchar read_lcd_state()
+  24          {
+  25   1              uchar state;
+  26   1              LCD_RS=0;
+  27   1              LCD_RW=1;
+  28   1              LCD_EN=1;
+  29   1              _nop_();
+  30   1              state=P0;
+  31   1              LCD_EN=0;
+  32   1              _nop_();
+  33   1              return state;
+  34   1      }
+  35          //-------√¶µ»¥˝------
+  36          void lcd_busy_wait()
+  37          {
+  38   1              while((read_lcd_state() & 0x80)==0x80);
+  39   1              NOP();
+  40   1      }
+  41          //----------LCD–¥÷∏¡Ó----------
+  42          void lcd_write_com(uchar com)
+  43          {
+  44   1              lcd_busy_wait();
+  45   1              LCD_RS=0;               //RSŒ™0 ±£¨–¥÷∏¡Ó£¨RSŒ™1 ±£¨–¥ ˝æ›
+  46   1              LCD_RW=0;
+  47   1              P0=com;
+  48   1              NOP();
+  49   1              LCD_EN=1;
+  50   1              NOP();
+  51   1              LCD_EN=0;
+  52   1      }
+  53          //----------LCD–¥ ˝æ›----------
+  54          void lcd_write_data(uchar dat)
+  55          {
+C51 COMPILER V9.54   MAIN                                                                  05/24/2023 18:52:30 PAGE 2   
+
+  56   1              lcd_busy_wait();
+  57   1              LCD_RS=1;
+  58   1              LCD_RW=0;
+  59   1              P0=dat;
+  60   1              NOP();                                  
+  61   1              LCD_EN=1;
+  62   1              NOP();
+  63   1              LCD_EN=0;
+  64   1      }
+  65          //-------LCD≥ı ºªØ-------
+  66          void lcd_init()
+  67          {
+  68   1              LCD_EN=0;
+  69   1              lcd_write_com(0x38);                    //LCDœ‘ æƒ£ Ω…Ë÷√
+  70   1              lcd_write_com(0x0c);                    //LCDœ‘ æø™/πÿº∞π‚±Í…Ë÷√
+  71   1              lcd_write_com(0x06);                    //µ±–¥“ª∏ˆ◊÷∑˚∫Ûµÿ÷∑÷∏’Îº”1£¨«“π‚±Íº”1
+  72   1              lcd_write_com(0x01);                    //œ‘ æ«Â∆¡
+  73   1      }
+  74          //---------…Ë÷√“∫æßœ‘ æŒª÷√-----------
+  75          void set_lcd_pos(uchar p)
+  76          {
+  77   1              lcd_write_com(p|0x80);
+  78   1      }
+  79          //---------“∫æßœ‘ æ≥Ã–Ú----------
+  80          void lcd_print(uchar p,uchar *s,uint low)
+  81          {
+  82   1              uint num;
+  83   1              set_lcd_pos(p);
+  84   1              for(num=0;num<low;num++)                
+  85   1              {
+  86   2                      lcd_write_data(s[num]);
+  87   2                      delay(1);       
+  88   2              }
+  89   1      }
+  90          
+  91          
+  92          //------------÷˜≥Ã–Ú-----------
+  93          void main()
+  94          {
+  95   1              lcd_init();
+  96   1              delay(5);
+  97   1              TMOD=0x19;
+  98   1              EA=1;                   //ø™◊‹÷–∂œ
+  99   1              TR0=1;                  //∆Ù∂Ø∂® ±∆˜
+ 100   1              EX0=1;                  //ø™Õ‚≤ø÷–∂œ
+ 101   1              IT0=1;                  //…Ë÷√Œ™œ¬Ωµ—ÿ÷–∂œ∑Ω Ω
+ 102   1              while(1)
+ 103   1              {
+ 104   2                      lcd_print(0x01,table,12);
+ 105   2              }
+ 106   1      }
+ 107          //Õ‚≤ø÷–∂œ0
+ 108          void int0() interrupt 0
+ 109          {
+ 110   1              t=(TH0*256 + TL0);      //º∆À„∏ﬂµÁ∆Ω≥÷–¯µƒ ±º‰,…œ…˝—ÿµΩ¿¥ ±∫Úø™ ºº∆ ±£¨œ¬Ωµ—ÿµΩ¿¥Ω¯»ÎÕ‚≤ø÷–∂œ£¨πÿ±’º∆ ±∆˜£¨Õ£÷
+             -πº∆ ±
+ 111   1              TH0=0;
+ 112   1              TL0=0;
+ 113   1      }
+
+
+MODULE INFORMATION:   STATIC OVERLAYABLE
+C51 COMPILER V9.54   MAIN                                                                  05/24/2023 18:52:30 PAGE 3   
+
+   CODE SIZE        =    289    ----
+   CONSTANT SIZE    =     12    ----
+   XDATA SIZE       =   ----    ----
+   PDATA SIZE       =   ----    ----
+   DATA SIZE        =      4       8
+   IDATA SIZE       =   ----    ----
+   BIT SIZE         =   ----    ----
+END OF MODULE INFORMATION.
+
+
+C51 COMPILATION COMPLETE.  0 WARNING(S),  0 ERROR(S)

@@ -1,0 +1,142 @@
+C51 COMPILER V9.54   MAIN                                                                  05/18/2023 09:44:28 PAGE 1   
+
+
+C51 COMPILER V9.54, COMPILATION OF MODULE MAIN
+OBJECT MODULE PLACED IN .\Objects\main.obj
+COMPILER INVOKED BY: D:\Keil5 C51\C51\BIN\C51.EXE main.c OPTIMIZE(8,SPEED) BROWSE DEBUG OBJECTEXTEND PRINT(.\Listings\ma
+                    -in.lst) TABS(2) OBJECT(.\Objects\main.obj)
+
+line level    source
+
+   1          #include <reg52.h>
+   2          #include <seg.h>
+   3          #include <delay.h>
+   4          
+   5          #define KEY_DELAY_TIME 100
+   6          
+   7          sbit S1 = P1^0;
+   8          sbit S2 = P1^1;
+   9          
+  10          char key_value = 0;
+  11          
+  12          
+  13          unsigned char Date_buff[3] = {0, 0,0};//数码管显示缓冲区，初值0xFF确保启动时都不亮
+  14          //显示的数字，数值为10的时候，显示“-”
+  15          
+  16          char key1_flag = 1;
+  17          char key1_cnt;
+  18          char key2_flag = 1;
+  19          char key2_cnt;
+  20          char key12_flag = 1;
+  21          char key12_cnt;
+  22          void key_scan()
+  23          {
+  24   1        if(S1 || S2)
+  25   1          {
+  26   2            key12_flag = 0;
+  27   2            key12_cnt = 0;
+  28   2          }
+  29   1          if(!key12_flag)
+  30   1          {
+  31   2            key12_cnt++;
+  32   2            if(key12_cnt > KEY_DELAY_TIME)
+  33   2            {
+  34   3              key12_cnt = 0;
+  35   3              key12_flag = 1;
+  36   3              key_value = 1;
+  37   3            }
+  38   2          }
+  39   1            
+  40   1          if(S1)
+  41   1          {
+  42   2            key1_flag = 0;
+  43   2            key1_cnt = 0;
+  44   2          }
+  45   1          if(!key1_flag)
+  46   1          {
+  47   2            key1_cnt++;
+  48   2            if(key1_cnt > KEY_DELAY_TIME)
+  49   2            {
+  50   3              key1_cnt = 0;
+  51   3              key1_flag = 1;
+  52   3              key_value+=1;
+  53   3            }
+  54   2          }
+C51 COMPILER V9.54   MAIN                                                                  05/18/2023 09:44:28 PAGE 2   
+
+  55   1            
+  56   1          if(S2)
+  57   1          {
+  58   2            key2_flag = 0;
+  59   2            key2_cnt = 0;
+  60   2          }
+  61   1          if(!key2_flag)
+  62   1          {
+  63   2            key2_cnt++;
+  64   2            if(key2_cnt > KEY_DELAY_TIME)
+  65   2            {
+  66   3              key2_cnt = 0;
+  67   3              key2_flag = 1;
+  68   3              key_value-=1;
+  69   3            } 
+  70   2          }
+  71   1          
+  72   1          
+  73   1      }
+  74          
+  75          
+  76          //数码管“以左为尊”————最左边是最高位
+  77          void  Display_smg(unsigned char i) 
+  78          {
+  79   1        write_data(1,i%10);   // 显示时最高位
+  80   1        write_data(2,i/10%10);
+  81   1        write_data(3,i/100%10);
+  82   1        write_data(4,i/1000%10);
+  83   1      
+  84   1      }
+  85          
+  86          void main(void)
+  87          {
+  88   1        
+  89   1        
+  90   1        unsigned char i;
+  91   1        init_max7221();    // 初始化
+  92   1        delayms(2);
+  93   1        for(i = 0; i < 8; i++)
+  94   1        {
+  95   2          write_data(i+1,10);   // 显示-位
+  96   2        }
+  97   1        delayms(1000);
+  98   1        while(1) 
+  99   1        {
+ 100   2      //    if(S1 == 1)
+ 101   2      //    {
+ 102   2      //      flag_key = 1;
+ 103   2      //    }
+ 104   2      //    if(flag_key == 1&& S1==0)
+ 105   2      //    {
+ 106   2      //      n+=1;
+ 107   2      //      flag_key = 0;
+ 108   2      //    }
+ 109   2          key_scan(); 
+ 110   2          Display_smg(key_value);
+ 111   2        }
+ 112   1      }
+ 113          
+ 114          
+
+
+C51 COMPILER V9.54   MAIN                                                                  05/18/2023 09:44:28 PAGE 3   
+
+MODULE INFORMATION:   STATIC OVERLAYABLE
+   CODE SIZE        =    218    ----
+   CONSTANT SIZE    =   ----    ----
+   XDATA SIZE       =   ----    ----
+   PDATA SIZE       =   ----    ----
+   DATA SIZE        =     10       2
+   IDATA SIZE       =   ----    ----
+   BIT SIZE         =   ----    ----
+END OF MODULE INFORMATION.
+
+
+C51 COMPILATION COMPLETE.  0 WARNING(S),  0 ERROR(S)

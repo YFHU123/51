@@ -1,0 +1,102 @@
+C51 COMPILER V9.54   MAIN                                                                  05/11/2023 21:00:08 PAGE 1   
+
+
+C51 COMPILER V9.54, COMPILATION OF MODULE MAIN
+OBJECT MODULE PLACED IN .\Objects\main.obj
+COMPILER INVOKED BY: D:\Keil5 C51\C51\BIN\C51.EXE main.c OPTIMIZE(8,SPEED) BROWSE DEBUG OBJECTEXTEND PRINT(.\Listings\ma
+                    -in.lst) TABS(2) OBJECT(.\Objects\main.obj)
+
+line level    source
+
+   1          #include <reg52.h>
+   2          #include <seg.h>
+   3          #include <delay.h>
+   4          
+   5          #define KEY_DELAY_TIME 100
+   6          
+   7          sbit S1 = P1^0;
+   8          
+   9          char n = 0;
+  10          
+  11          
+  12          unsigned char Date_buff[3] = {0, 0,0};//数码管显示缓冲区，初值0xFF确保启动时都不亮
+  13          //显示的数字，数值为10的时候，显示“-”
+  14          
+  15          
+  16          char flag_key;
+  17          char cnt_key;
+  18          void key_scan()
+  19          {
+  20   1        if(S1 == 1)
+  21   1          {
+  22   2            flag_key = 1;
+  23   2            cnt_key = 0;
+  24   2          }
+  25   1          if(flag_key == 1&& S1==0)
+  26   1          {
+  27   2            cnt_key++;
+  28   2            if(cnt_key > KEY_DELAY_TIME)
+  29   2            {
+  30   3              cnt_key = 0;
+  31   3              n+=1;
+  32   3              flag_key = 0;
+  33   3              if(n == 10)
+  34   3                n = 0;
+  35   3            }
+  36   2            
+  37   2          }
+  38   1      }
+  39          
+  40          
+  41          //数码管“以左为尊”————最左边是最高位
+  42          void  Display_smg(unsigned char i) 
+  43          {
+  44   1        write_data(8,i);   // 显示时最高位   
+  45   1          // 显示时最低位
+  46   1      }
+  47          
+  48          void main(void)
+  49          {
+  50   1        
+  51   1        
+  52   1        unsigned char i;
+  53   1        init_max7221();    // 初始化
+  54   1        delayms(2);
+C51 COMPILER V9.54   MAIN                                                                  05/11/2023 21:00:08 PAGE 2   
+
+  55   1        for(i = 0; i < 8; i++)
+  56   1        {
+  57   2          write_data(i+1,10);   // 显示-位
+  58   2        }
+  59   1        delayms(1000);
+  60   1        while(1) 
+  61   1        {
+  62   2      //    if(S1 == 1)
+  63   2      //    {
+  64   2      //      flag_key = 1;
+  65   2      //    }
+  66   2      //    if(flag_key == 1&& S1==0)
+  67   2      //    {
+  68   2      //      n+=1;
+  69   2      //      flag_key = 0;
+  70   2      //    }
+  71   2          key_scan(); 
+  72   2          Display_smg(n);
+  73   2        }
+  74   1      }
+  75          
+  76          
+
+
+MODULE INFORMATION:   STATIC OVERLAYABLE
+   CODE SIZE        =     99    ----
+   CONSTANT SIZE    =   ----    ----
+   XDATA SIZE       =   ----    ----
+   PDATA SIZE       =   ----    ----
+   DATA SIZE        =      6       1
+   IDATA SIZE       =   ----    ----
+   BIT SIZE         =   ----    ----
+END OF MODULE INFORMATION.
+
+
+C51 COMPILATION COMPLETE.  0 WARNING(S),  0 ERROR(S)

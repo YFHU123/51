@@ -1,0 +1,226 @@
+C51 COMPILER V9.54   MAIN                                                                  05/16/2023 13:30:02 PAGE 1   
+
+
+C51 COMPILER V9.54, COMPILATION OF MODULE MAIN
+OBJECT MODULE PLACED IN main.OBJ
+COMPILER INVOKED BY: D:\Keil5 C51\C51\BIN\C51.EXE main.c OPTIMIZE(8,SPEED) BROWSE DEBUG OBJECTEXTEND TABS(2)
+
+line level    source
+
+   1          #include "reg52.h"
+   2          
+   3          
+   4          sbit S1 = P3^2;
+   5          sbit S2 = P3^3;
+   6          
+   7          sbit L1 = P2^0;
+   8          sbit L2 = P2^1;
+   9          sbit L3 = P2^2;
+  10          sbit L4 = P2^3;
+  11          sbit L5 = P2^4;
+  12          sbit L6 = P2^5;
+  13          sbit L7 = P2^6;
+  14          sbit L8 = P2^7;
+  15          
+  16          sbit P1_0 = P1^0;
+  17          sbit P1_1 = P1^1;
+  18          sbit P1_2 = P1^2;
+  19          sbit P1_3 = P1^3;
+  20          
+  21          unsigned int key_cnt = 0;
+  22          char a[8] = {0xfe,0xfd,0xfb,0xf7,0xef,0xdf,0xbf,0x7f};
+  23          char seg[10] = {0xC0,0xF9,0xA4,0xB0,0x99,0x92,0x82,0xF8,0x80,0x90};
+  24          
+  25          char Flag_1 = 0; 
+  26          char Flag_2 = 0;
+  27          void Key_scan()
+  28          {
+  29   1      
+  30   1        if(S1 == 0)
+  31   1        {
+  32   2          Flag_1 = 1;
+  33   2        }
+  34   1        if(Flag_1 == 1 && S1 == 1)
+  35   1        {
+  36   2          Flag_1 = 0;
+  37   2      //    key_cnt += 1;
+  38   2          L1 = 0;
+  39   2          L2 = 1;
+  40   2        }
+  41   1        
+  42   1        if(S2 == 0)
+  43   1        {
+  44   2          Flag_2 = 1;
+  45   2        }
+  46   1        if(Flag_2 == 1 && S1 == 1)
+  47   1        {
+  48   2          Flag_2 = 0;
+  49   2      //    key_cnt -= 1;
+  50   2          L2 =0;
+  51   2          L1 =1;
+  52   2        }
+  53   1      }
+  54          
+  55          void delay_ms(int ms)
+C51 COMPILER V9.54   MAIN                                                                  05/16/2023 13:30:02 PAGE 2   
+
+  56          {
+  57   1          int i = 0;
+  58   1          int j = 0;
+  59   1          for(i=0;i<ms;i++)
+  60   1          {
+  61   2              for(j=0;j<100;j++){}
+  62   2          }
+  63   1      }
+  64          
+  65          
+  66          
+  67          
+  68          void SMG_pos(unsigned char i)
+  69          {
+  70   1        switch(i)
+  71   1        {
+  72   2          case 1:
+  73   2            P1_0 = 1;
+  74   2            P1_1 = 0;
+  75   2            P1_2 = 0;
+  76   2            P1_3 = 0;
+  77   2          break;
+  78   2          
+  79   2          case 2:
+  80   2            P1_0 = 0;
+  81   2            P1_1 = 1;
+  82   2            P1_2 = 0;
+  83   2            P1_3 = 0;
+  84   2          break;
+  85   2          
+  86   2          case 3:
+  87   2            P1_0 = 0;
+  88   2            P1_1 = 0;
+  89   2            P1_2 = 1;
+  90   2            P1_3 = 0;
+  91   2          break;
+  92   2          
+  93   2          case 4:
+  94   2            P1_0 = 0;
+  95   2            P1_1 = 0;
+  96   2            P1_2 = 0;
+  97   2            P1_3 = 1;
+  98   2          break;
+  99   2          
+ 100   2          case 5:
+ 101   2            P1_0 = 0;
+ 102   2            P1_1 = 0;
+ 103   2            P1_2 = 0;
+ 104   2            P1_3 = 0;
+ 105   2          break;
+ 106   2        }
+ 107   1      }
+ 108          
+ 109          void SMG_bit(unsigned char pos,value)
+ 110          {
+ 111   1        SMG_pos(pos);
+ 112   1        P0 = seg[value];
+ 113   1      }
+ 114          
+ 115          
+ 116          
+ 117          void SMG_Dynamic()
+C51 COMPILER V9.54   MAIN                                                                  05/16/2023 13:30:02 PAGE 3   
+
+ 118          {
+ 119   1        SMG_bit(1,key_cnt/1000);
+ 120   1      //  delay_ms(10);
+ 121   1        SMG_bit(2,key_cnt/100%10);
+ 122   1      //  delay_ms(10);
+ 123   1        SMG_bit(3,key_cnt/10%10);
+ 124   1      //  delay_ms(10);
+ 125   1        SMG_bit(4,key_cnt%10);
+ 126   1      //  delay_ms(10);
+ 127   1        SMG_bit(5,0x00);
+ 128   1      //  delay_ms(10);
+ 129   1      }
+ 130          
+ 131          
+ 132          void Timer0Init(void)   //2毫秒@12.000MHz
+ 133          {
+ 134   1        TMOD &= 0xF0;   //???????
+ 135   1        TMOD |= 0x01;   //???????
+ 136   1        TL0 = 0x30;   //??????
+ 137   1        TH0 = 0xF8;   //??????
+ 138   1        TF0 = 0;    //??TF0??
+ 139   1        ET0 = 1;
+ 140   1        EA = 1;
+ 141   1        TR0 = 1;    //???0????
+ 142   1      }
+ 143          
+ 144          
+ 145          
+ 146          void timer0()interrupt 1 //每隔2毫秒进入中断一次
+ 147          {
+ 148   1        TR0 = 0;
+ 149   1        TL0 = 0x18;   //??????
+ 150   1        TH0 = 0xFC;   //??????
+ 151   1        TR0 = 1;
+ 152   1      }
+ 153          
+ 154          void INT0_Init(void)
+ 155          {
+ 156   1        IT0 = 1; //外部中断触发模式，下降沿
+ 157   1        EA =1; //外部中断0开关
+ 158   1        EX0 =1; //外部中断总开关
+ 159   1        
+ 160   1      }
+ 161          
+ 162          
+ 163          void exint0() interrupt 0       //INT0????
+ 164          {
+ 165   1          key_cnt+=1;
+ 166   1          L1 = !L1;
+ 167   1          L2 = 1;               //??INT0????, INT0=0(???); INT0=1(???)
+ 168   1      }
+ 169          
+ 170          
+ 171          void INT1_Init(void)
+ 172          {
+ 173   1        IT1 =1;//外部中断触发模式，下降沿
+ 174   1        EA =1;//外部中断1开关
+ 175   1        EX1 =1;//外部中断总开关
+ 176   1        
+ 177   1      }
+ 178          
+ 179          void exint1() interrupt 2       //INT0????
+C51 COMPILER V9.54   MAIN                                                                  05/16/2023 13:30:02 PAGE 4   
+
+ 180          {
+ 181   1        key_cnt+=5;
+ 182   1        L2 = !L2;
+ 183   1        L1 = 1;               //??INT0????, INT0=0(???); INT0=1(???)
+ 184   1      }
+ 185          
+ 186          
+ 187          void main()
+ 188          {
+ 189   1        INT0_Init();
+ 190   1        INT1_Init();
+ 191   1        while(1)
+ 192   1        {
+ 193   2      //    P2 = a[key_cnt%8];
+ 194   2      //    Key_scan();
+ 195   2          SMG_Dynamic();
+ 196   2        }
+ 197   1      }
+
+
+MODULE INFORMATION:   STATIC OVERLAYABLE
+   CODE SIZE        =    334    ----
+   CONSTANT SIZE    =   ----    ----
+   XDATA SIZE       =   ----    ----
+   PDATA SIZE       =   ----    ----
+   DATA SIZE        =     22    ----
+   IDATA SIZE       =   ----    ----
+   BIT SIZE         =   ----    ----
+END OF MODULE INFORMATION.
+
+
+C51 COMPILATION COMPLETE.  0 WARNING(S),  0 ERROR(S)

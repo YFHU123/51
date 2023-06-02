@@ -1,0 +1,5 @@
+".\Objects\main.obj",
+".\Objects\seg.obj",
+".\Objects\delay.obj" 
+TO ".\Objects\MAX7219" 
+PRINT(".\Listings\MAX7219.m51") RAMSIZE(256) 

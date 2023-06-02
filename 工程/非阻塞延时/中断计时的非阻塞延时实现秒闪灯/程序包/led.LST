@@ -1,0 +1,54 @@
+C51 COMPILER V9.54   LED                                                                   05/06/2023 13:25:18 PAGE 1   
+
+
+C51 COMPILER V9.54, COMPILATION OF MODULE LED
+OBJECT MODULE PLACED IN led.OBJ
+COMPILER INVOKED BY: D:\Keil5 C51\C51\BIN\C51.EXE led.c OPTIMIZE(8,SPEED) BROWSE DEBUG OBJECTEXTEND TABS(2)
+
+line level    source
+
+   1          #include <reg51.h> 
+   2          #include "time.h"
+   3          
+   4          
+   5          sbit LED1 = P0^0;
+   6          
+   7           
+   8          #define LED1_SHINE_TIME 1000;
+   9          
+  10          
+  11          
+  12          
+  13          void main(void)                     
+  14          { 
+  15   1        time1_cnt = LED1_SHINE_TIME;
+  16   1        time1_enable = 1;
+  17   1        time1_flag = 0;
+  18   1        
+  19   1        Timer0Init();
+  20   1        
+  21   1        while(1)
+  22   1        {
+  23   2          if(time1_flag)
+  24   2          {
+  25   3            time1_flag = 0;
+  26   3            LED1 = ~LED1;
+  27   3            time1_cnt = LED1_SHINE_TIME;
+  28   3          }
+  29   2          
+  30   2        }
+  31   1      }
+
+
+MODULE INFORMATION:   STATIC OVERLAYABLE
+   CODE SIZE        =     35    ----
+   CONSTANT SIZE    =   ----    ----
+   XDATA SIZE       =   ----    ----
+   PDATA SIZE       =   ----    ----
+   DATA SIZE        =   ----    ----
+   IDATA SIZE       =   ----    ----
+   BIT SIZE         =   ----    ----
+END OF MODULE INFORMATION.
+
+
+C51 COMPILATION COMPLETE.  0 WARNING(S),  0 ERROR(S)

@@ -1,0 +1,4 @@
+".\Objects\STARTUP.obj",
+".\Objects\main.obj" 
+TO ".\Objects\core_230411" 
+PRINT(".\Listings\core_230411.m51")

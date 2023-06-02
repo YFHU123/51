@@ -1,0 +1,184 @@
+C51 COMPILER V9.54   MAIN                                                                  05/22/2023 20:26:39 PAGE 1   
+
+
+C51 COMPILER V9.54, COMPILATION OF MODULE MAIN
+OBJECT MODULE PLACED IN .\Objects\main.obj
+COMPILER INVOKED BY: D:\Keil5 C51\C51\BIN\C51.EXE main.c OPTIMIZE(8,SPEED) BROWSE DEBUG OBJECTEXTEND PRINT(.\Listings\ma
+                    -in.lst) TABS(2) OBJECT(.\Objects\main.obj)
+
+line level    source
+
+   1          #include "reg51.h"
+   2          
+   3          
+   4          
+   5          sbit KEYIN1 = P2^0;
+   6          sbit KEYIN2 = P2^1;
+   7          sbit KEYIN3 = P2^2;
+   8          sbit KEYIN4 = P2^3;
+   9          
+  10          sbit KEYOUT1 = P2^4;
+  11          sbit KEYOUT2 = P2^5;
+  12          sbit KEYOUT3 = P2^6;
+  13          sbit KEYOUT4 = P2^7;
+  14          
+  15          sbit P3_0 = P3^0;
+  16          sbit P3_1 = P3^1;
+  17          sbit P3_2 = P3^2;
+  18          sbit P3_3 = P3^3;
+  19          
+  20          
+  21          
+  22          
+  23          char seg[10] = {0xC0,0xF9,0xA4,0xB0,0x99,0x92,0x82,0xF8,0x80,0x90};
+  24          
+  25          void DelayXms(int ms)
+  26          {
+  27   1          int i = 0;
+  28   1          int j = 0;
+  29   1          for(i=0;i<ms;i++)
+  30   1          {
+  31   2              for(j=0;j<100;j++){}
+  32   2          }
+  33   1      }
+  34          
+  35          unsigned char Key_Scan()
+  36          {
+  37   1        
+  38   1        unsigned char temp,temp2;
+  39   1        static unsigned char KeyNum = 0;
+  40   1        
+  41   1        P2 = 0xf0;              //4????,4????,??“0”,???“1”
+  42   1        temp = P2;              //?P2 IO?
+  43   1        
+  44   1        if(temp != 0xf0)            //????????
+  45   1        {
+  46   2          DelayXms(10);
+  47   2          if(temp != 0xf0)          //??????????(??)
+  48   2          {
+  49   3            temp = P2 & 0xf0;     //????????
+  50   3            P2 = 0x0f;          //4????,4????,??“0”,???“1”
+  51   3            temp2 = P2 & 0x0f;      //???????????   
+  52   3          }
+  53   2        }
+  54   1        
+C51 COMPILER V9.54   MAIN                                                                  05/22/2023 20:26:39 PAGE 2   
+
+  55   1        switch(temp + temp2)//???
+  56   1        {
+  57   2          case 0xee : KeyNum = 1;break;
+  58   2          case 0xed : KeyNum = 2;break;
+  59   2          case 0xeb : KeyNum = 3;break;
+  60   2          case 0xe7 : KeyNum = 4;break;
+  61   2          
+  62   2          case 0xde : KeyNum = 5;break;   
+  63   2          case 0xdd : KeyNum = 6;break;
+  64   2          case 0xdb : KeyNum = 7;break;
+  65   2          case 0xd7 : KeyNum = 8;break;
+  66   2          
+  67   2          case 0xbe : KeyNum = 9;break;   
+  68   2          case 0xbd : KeyNum = 0;break;
+  69   2          case 0xbb : KeyNum = 10;break;
+  70   2          case 0xb7 : KeyNum = 11;break;
+  71   2      
+  72   2          case 0x7e : KeyNum = 12;break;    
+  73   2          case 0x7d : KeyNum = 13;break;
+  74   2          case 0x7b : KeyNum = 14;break;
+  75   2          case 0x77 : KeyNum = 15;break;    
+  76   2        }
+  77   1        
+  78   1        return KeyNum;  
+  79   1      }
+  80          
+  81          
+  82          
+  83          void SMG_pos(unsigned char i)
+  84          {
+  85   1        switch(i)
+  86   1        {
+  87   2          case 1:
+  88   2            P3_0 = 1;
+  89   2            P3_1 = 0;
+  90   2            P3_2 = 0;
+  91   2            P3_3 = 0;
+  92   2          break;
+  93   2          
+  94   2          case 2:
+  95   2            P3_0 = 0;
+  96   2            P3_1 = 1;
+  97   2            P3_2 = 0;
+  98   2            P3_3 = 0;
+  99   2          break;
+ 100   2          
+ 101   2          case 3:
+ 102   2            P3_0 = 0;
+ 103   2            P3_1 = 0;
+ 104   2            P3_2 = 1;
+ 105   2            P3_3 = 0;
+ 106   2          break;
+ 107   2          
+ 108   2          case 4:
+ 109   2            P3_0 = 0;
+ 110   2            P3_1 = 0;
+ 111   2            P3_2 = 0;
+ 112   2            P3_3 = 1;
+ 113   2          break;
+ 114   2          
+ 115   2          case 5:
+ 116   2            P3_0 = 0;
+C51 COMPILER V9.54   MAIN                                                                  05/22/2023 20:26:39 PAGE 3   
+
+ 117   2            P3_1 = 0;
+ 118   2            P3_2 = 0;
+ 119   2            P3_3 = 0;
+ 120   2          break;
+ 121   2        }
+ 122   1      }
+ 123          
+ 124          void SMG_bit(unsigned char pos,value)
+ 125          {
+ 126   1        SMG_pos(pos);
+ 127   1        P0 = seg[value];
+ 128   1      }
+ 129          
+ 130          
+ 131          
+ 132          void SMG_Dynamic(unsigned char i)
+ 133          {
+ 134   1        SMG_bit(1,(i/1000)%10);
+ 135   1        DelayXms(10);
+ 136   1        SMG_bit(2,(i/100)%10);
+ 137   1        DelayXms(10);
+ 138   1        SMG_bit(3,(i/10)%10);
+ 139   1        DelayXms(10);
+ 140   1        SMG_bit(4,i%10);
+ 141   1        DelayXms(10);
+ 142   1        SMG_bit(5,0x00);
+ 143   1        DelayXms(10);
+ 144   1      }
+ 145          
+ 146          
+ 147          
+ 148          void main()
+ 149          {
+ 150   1        char key1Flag = 0; 
+ 151   1        int i = 0;
+ 152   1          while(1)
+ 153   1          {  
+ 154   2              SMG_Dynamic(Key_Scan());
+ 155   2          }   
+ 156   1      }
+
+
+MODULE INFORMATION:   STATIC OVERLAYABLE
+   CODE SIZE        =    388    ----
+   CONSTANT SIZE    =   ----    ----
+   XDATA SIZE       =   ----    ----
+   PDATA SIZE       =   ----    ----
+   DATA SIZE        =     11       5
+   IDATA SIZE       =   ----    ----
+   BIT SIZE         =   ----    ----
+END OF MODULE INFORMATION.
+
+
+C51 COMPILATION COMPLETE.  0 WARNING(S),  0 ERROR(S)
